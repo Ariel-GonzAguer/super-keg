@@ -14,3 +14,9 @@ export enum EstadosKeg {
   LLENO = "lleno",
   SUCIO = "sucio",
 }
+
+export interface KegState {
+  kegsIDs: string[]; 
+  agregarIDKegs: (id: string) => void;
+  limpiarStore: () => void; // Función para limpiar el store
+}

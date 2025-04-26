@@ -9,12 +9,6 @@ function App() {
   const [mensaje, setMensaje] = useState("");
   const [fullKeg, setFullKeg] = useState<Keg | null>(null);
 
-  const handleScan = (keg: Keg) => {
-    const yaExiste = kegs.some(kegSS => kegSS.id === keg.id);
-    if (!yaExiste) {
-      setKegs(prev => [...prev, keg]);
-    }
-  };
 
   async function actualizarKegs() {
     const batch = writeBatch(db);

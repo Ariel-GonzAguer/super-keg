@@ -1,1 +1,1 @@
-- npm i @yudiel/react-qr-scanner
+-
