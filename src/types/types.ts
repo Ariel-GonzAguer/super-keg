@@ -21,8 +21,14 @@ export interface KegState {
   limpiarStore: () => void; // Función para limpiar el store
 }
 
+interface User {
+  data: {};
+  email: string;
+  empresa: string;
+}
+
 export interface AuthState {
-  user: { email: string, empresa: string}; // Cambia 'any' por el tipo de usuario si lo conoces
+  user: User | null; 
   setUser: (user: any | null) => void;
   logOut: () => Promise<void>;
 }

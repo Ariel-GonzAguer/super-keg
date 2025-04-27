@@ -6,15 +6,18 @@ import VerKegs from "../pages/VerKegs";
 import AgregarData from "../pages/AgregarData";
 import NotFoud404 from "../components/NotFound404";
 
+// protección de rutas
+import Protected from "./Protected";
+
 
 // layout
 // import BaseLayout from "../layouts/BaseLayout";
 
 const rutas = [
   { path: "/", component: <Home /> },
-  { path: "/actualizar-kegs", component: <ActualizarKegs /> },
-  { path: "/ver-kegs", component: <VerKegs /> },
-  { path: "/agregar-data", component: <AgregarData /> },
+  { path: "/actualizar-kegs", component: <Protected><ActualizarKegs /></Protected> },
+  { path: "/ver-kegs", component: <Protected><VerKegs /> </Protected> },
+  { path: "/agregar-data", component: <Protected><AgregarData /></Protected> },
 ];
 
 export default function MichiRouter() {

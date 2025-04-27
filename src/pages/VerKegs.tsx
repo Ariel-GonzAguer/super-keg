@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 // estilos
 
 // componentes
+import LogOutButton from "../components/LogOutButton";
 
 // firebase
 import { db } from "../firebase/firebaseConfig";
@@ -43,14 +44,15 @@ export default function VerKegs() {
           return;
         }
 
-        const users = data.users;
         const clientes = data.clientes;
+        console.log("clientes", clientes);
         setClientes(clientes || []); // Cambiado a any[] para manejar JSON
         const kegs = data.kegs;
         setKegs(kegs || []); // Cambiado a any[] para manejar JSON
         const productos = data.productos;
         setProductos(productos || []); // Cambiado a any[] para manejar JSON
-
+        
+        const users = data.users;
         // Verifica si el mapa de usuarios existe
         if (!users) {
           console.log("El documento no contiene un mapa de usuarios.");
@@ -96,14 +98,24 @@ export default function VerKegs() {
   }
     , [user]); // Dependencia para que se ejecute cuando el usuario cambie
 
+  // Asegúrate de que `clientes` sea un array antes de usar `.map()`
+  const renderClientes = Array.isArray(clientes) ? clientes : [];
+
+  // Asegúrate de que `kegs` sea un array antes de usar `.map()`
+  const renderKegs = Array.isArray(kegs) ? kegs : [];
+
+  // Asegúrate de que `productos` sea un array antes de usar `.map()`
+  const renderProductos = Array.isArray(productos) ? productos : [];
+
   return (
     <section>
+      <LogOutButton />
       <h2>Ver kegs</h2>
       <h3>Usuario: {nombreUsuario}</h3>
       <div>
         <h4>Clientes</h4>
         {
-          clientes.map((cliente, index) => (
+          renderClientes.map((cliente, index) => (
             <div key={index}>
               <h4>{cliente.nombre}</h4>
               <p>Ubicación: {cliente.ubicacion}</p>
@@ -117,7 +129,7 @@ export default function VerKegs() {
       <div>
         <h4>Kegs</h4>
         {
-          kegs.map((keg, index) => (
+          renderKegs.map((keg, index) => (
             <div key={index}>
               <h4>{keg.nombre}</h4>
               <p>Ubicación: {keg.ubicacion}</p>
@@ -132,7 +144,7 @@ export default function VerKegs() {
       <div>
         <h4>Productos</h4>
         {
-          productos.map((producto, index) => (
+          renderProductos.map((producto, index) => (
             <div key={index}>
               <h4>{producto.nombre}</h4>
               <p>Ubicación: {producto.ubicacion}</p>
