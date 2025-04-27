@@ -20,3 +20,9 @@ export interface KegState {
   agregarIDKegs: (id: string) => void;
   limpiarStore: () => void; // Función para limpiar el store
 }
+
+export interface AuthState {
+  user: { email: string, empresa: string}; // Cambia 'any' por el tipo de usuario si lo conoces
+  setUser: (user: any | null) => void;
+  logOut: () => Promise<void>;
+}
