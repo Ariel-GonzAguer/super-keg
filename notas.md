@@ -1,1 +1,1 @@
--
+- en VerKegs.tsx si lee bien el documento (obtiene clientes, kegs, productos, etc) porque muestra en consola la data, pero no la renderiza. ARREGLAR
