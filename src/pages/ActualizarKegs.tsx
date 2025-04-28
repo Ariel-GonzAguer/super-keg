@@ -37,7 +37,7 @@ function App() {
     if (!user) {
       throw new Error("El usuario no está autenticado.");
     }
-    const docRef = doc(db, "clientes", user.empresa); // Reemplazar "clienteID" con el ID del cliente correspondiente
+    const docRef = doc(db, "clientes", user.empresa);
 
     try {
       const docSnap = await getDoc(docRef);

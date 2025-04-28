@@ -1,5 +1,6 @@
 import { logOut } from "../firebase/firebaseConfig";
 import { useNavigate } from "@arielgonzaguer/michi-router";
+
 export default function LogOutButton() {
   const navigate = useNavigate();
 
