@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 
 // estilos
 
+// enrutado
+import { useNavigate } from "@arielgonzaguer/michi-router";
+
 // componentes
 import LogOutButton from "../components/LogOutButton";
 
@@ -12,28 +15,29 @@ import { doc, getDoc } from "firebase/firestore";
 
 // store
 import useAuthStore from "../store/useAuthStore"
+import useKegStore from "../store/useKegsStore";
 
 export default function VerKegs() {
   // estados locales
   const [nombreUsuario, setNombreUsuario] = useState<string>("");
-  const [clientes, setClientes] = useState<any[]>([]); // Cambiado a any[] para manejar JSON
-  const [kegs, setKegs] = useState<any[]>([]); // Cambiado a any[] para manejar JSON
-  const [productos, setProductos] = useState<any[]>([]); // Cambiado a any[] para manejar JSON
-
-  const { user } = useAuthStore(); // Cambiado a useStore para usar el store de zustand
-
-  useEffect(() => {
-    console.log("user", user);
-  }, [user]);
+  const [kegs, setKegs] = useState<any[]>([]);
 
 
+  // enrutado
+  const navigate = useNavigate();
 
   // store
+  const { user } = useAuthStore();
+  const { agregarProducto, agregarCliente, productos, clientes } = useKegStore();
 
   // funcion de una sola llamada
   async function fetchFullDatos() {
     try {
-      const docRef = doc(db, "clientes", user.empresa); // Cambiado a "noBorrar"
+      if (!user || !user.empresa) {
+        console.error("El usuario o la empresa no están definidos.");
+        return;
+      }
+      const docRef = doc(db, "clientes", user.empresa);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -45,15 +49,21 @@ export default function VerKegs() {
         }
 
         const clientes = data.clientes;
-        console.log("clientes", clientes);
-        setClientes(clientes || []); // Cambiado a any[] para manejar JSON
         const kegs = data.kegs;
-        setKegs(kegs || []); // Cambiado a any[] para manejar JSON
         const productos = data.productos;
-        setProductos(productos || []); // Cambiado a any[] para manejar JSON
-        
+
+        // Asegúrate de que los datos sean arrays antes de renderizarlos
+        const clientesArray = Array.isArray(clientes) ? clientes : Object.values(clientes || {});
+        const kegsArray = Array.isArray(kegs) ? kegs : Object.values(kegs || {});
+        const productosArray = Array.isArray(productos) ? productos : Object.values(productos || {});
+
+        // Actualiza los estados con los arrays transformados
+        clientesArray.forEach(cliente => agregarCliente(cliente));
+        setKegs(kegsArray);
+        productosArray.forEach(producto => agregarProducto(producto));
+
         const users = data.users;
-        // Verifica si el mapa de usuarios existe
+        // Verificamos si el mapa de usuarios existe
         if (!users) {
           console.log("El documento no contiene un mapa de usuarios.");
           return;
@@ -61,7 +71,7 @@ export default function VerKegs() {
 
         // Busca el usuario según el correo
         const userKey = Object.keys(users).find(
-          (key) => users[key]?.correo === user.email
+          (key) => user && users[key]?.correo === user.email
         );
 
         if (userKey) {
@@ -81,6 +91,7 @@ export default function VerKegs() {
       } else {
         console.log("No existe el documento");
       }
+
     } catch (error: any) {
       if (error.code === "permission-denied") {
         console.error("Error: Permisos insuficientes para leer el documento.");
@@ -92,36 +103,24 @@ export default function VerKegs() {
 
   // useEffect para llamar a la función una sola vez al cargar el componente
   useEffect(() => {
-    if (user) {
-      fetchFullDatos(); // Llama a la función
+    if (!user || !user.empresa) {
+      return; // Evita ejecutar fetchFullDatos si user o empresa no están definidos
     }
-  }
-    , [user]); // Dependencia para que se ejecute cuando el usuario cambie
-
-  // Asegúrate de que `clientes` sea un array antes de usar `.map()`
-  const renderClientes = Array.isArray(clientes) ? clientes : [];
-
-  // Asegúrate de que `kegs` sea un array antes de usar `.map()`
-  const renderKegs = Array.isArray(kegs) ? kegs : [];
-
-  // Asegúrate de que `productos` sea un array antes de usar `.map()`
-  const renderProductos = Array.isArray(productos) ? productos : [];
+    fetchFullDatos(); // Llama a la función solo cuando user está listo
+  }, [user]);
 
   return (
     <section>
       <LogOutButton />
+      <button onClick={() => navigate('/actualizar-kegs')}>Actualizar kegs</button>
       <h2>Ver kegs</h2>
       <h3>Usuario: {nombreUsuario}</h3>
       <div>
         <h4>Clientes</h4>
         {
-          renderClientes.map((cliente, index) => (
+          clientes.map((cliente, index) => (
             <div key={index}>
-              <h4>{cliente.nombre}</h4>
-              <p>Ubicación: {cliente.ubicacion}</p>
-              <p>Producto: {cliente.producto}</p>
-              <p>Lote: {cliente.lote}</p>
-              <p>Estado: {cliente.estado}</p>
+              <h4>{cliente}</h4>
             </div>
           ))
         }
@@ -129,13 +128,18 @@ export default function VerKegs() {
       <div>
         <h4>Kegs</h4>
         {
-          renderKegs.map((keg, index) => (
+          kegs.map((keg, index) => (
             <div key={index}>
-              <h4>{keg.nombre}</h4>
-              <p>Ubicación: {keg.ubicacion}</p>
-              <p>Producto: {keg.producto}</p>
-              <p>Lote: {keg.lote}</p>
+              <p>ID: {keg.id}</p>
               <p>Estado: {keg.estado}</p>
+              {keg.estado === "lleno" && (
+                <>
+                  <p>Producto: {keg.producto}</p>
+                  <p>Lote: {keg.lote}</p>
+                  <p>Fecha de llenado: {keg.fechaLlenado}</p>
+                </>
+              )}
+              <p>Ubicación: {keg.ubicacion}</p>
             </div>
           ))
         }
@@ -144,12 +148,9 @@ export default function VerKegs() {
       <div>
         <h4>Productos</h4>
         {
-          renderProductos.map((producto, index) => (
+          productos.map((producto, index) => (
             <div key={index}>
-              <h4>{producto.nombre}</h4>
-              <p>Ubicación: {producto.ubicacion}</p>
-              <p>Lote: {producto.lote}</p>
-              <p>Estado: {producto.estado}</p>
+              <p>{producto}</p>
             </div>
           ))
         }

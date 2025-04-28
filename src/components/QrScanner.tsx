@@ -12,7 +12,6 @@ import useKegStore from "../store/useKegsStore";
 
 export default function QRScanner() {
   // estados locales
-  // const [qrCodes, setQrCodes] = useState<String[]>([]); // Cambiado a any[] para manejar JSON
   const [error, setError] = useState<string | null>(null);
 
   // store

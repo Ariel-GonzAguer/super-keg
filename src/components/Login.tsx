@@ -28,7 +28,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
       setUser({data: user, email: email, empresa: empresa }); // Actualiza el estado del usuario en el store
-      console.log("Usuario autenticado:", user);
+      // console.log("Usuario autenticado:", user);
       navigate("/ver-kegs");
     } catch (error) {
       alert("Error al iniciar sesión. Usuario o contraseña incorrectos.");

@@ -15,10 +15,14 @@ export enum EstadosKeg {
   SUCIO = "sucio",
 }
 
-export interface KegState {
-  kegsIDs: string[]; 
+export interface KegStoreState {
+  kegsIDs: string[];
+  productos: string[];
+  clientes: string[];
   agregarIDKegs: (id: string) => void;
-  limpiarStore: () => void; // Función para limpiar el store
+  agregarProducto: (producto: string) => void;
+  agregarCliente: (cliente: string) => void;
+  limpiarStore: () => void;
 }
 
 interface User {
@@ -27,8 +31,8 @@ interface User {
   empresa: string;
 }
 
-export interface AuthState {
-  user: User | null; 
+export interface AuthStoreState {
+  user: User | null;
   setUser: (user: any | null) => void;
   logOut: () => Promise<void>;
 }

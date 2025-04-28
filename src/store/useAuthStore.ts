@@ -3,13 +3,14 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
-import { AuthState } from "../types/types"; // Asegúrate de que la ruta sea correcta
+import { AuthStoreState } from "../types/types";
 
 
-const useAuthStore = create<AuthState>()(
+const useAuthStore = create<AuthStoreState>()(
   persist(
     immer((set) => ({
-      user: null, // Inicializado como null
+      user: null,
+
       setUser: (user) =>
         set((state) => {
           state.user = user;
@@ -21,7 +22,10 @@ const useAuthStore = create<AuthState>()(
         });
       },
     })),
-    { name: "useAuthStore" } // Este es el nombre del local storage
+    {
+      name: "useAuthStore", // Nombre del local storage
+      partialize: (state) => ({ user: state.user }), // Solo persiste el estado `user`
+    }
   )
 );
 
@@ -34,7 +38,7 @@ onAuthStateChanged(auth, (currentUser) => {
     setUser({
       data: {},
       email: currentUser.email || "",
-      empresa: "", // Ajusta según los datos disponibles
+      empresa: "",
     });
   }
 });
