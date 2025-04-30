@@ -18,10 +18,10 @@ export enum EstadosKeg {
 export interface KegStoreState {
   kegsIDs: string[];
   productos: string[];
-  clientes: string[];
+  clientes: { nombre: string; kegs: any[] }[];
   agregarIDKegs: (id: string) => void;
   agregarProducto: (producto: string) => void;
-  agregarCliente: (cliente: string) => void;
+  agregarCliente: (cliente: { nombre: string; kegs: any[] }) => void;
   limpiarStore: () => void;
 }
 

@@ -48,18 +48,37 @@ export default function VerKegs() {
           return;
         }
 
-        const clientes = data.clientes;
-        const kegs = data.kegs;
+        const clientesMap = data.clientes;
+
+        if (!clientesMap || typeof clientesMap !== 'object') {
+          console.error("El campo 'clientes' no es un objeto válido.");
+          return;
+        }
+
+        const clientesArray = Object.entries(clientesMap).map(([_, cliente]: [string, any]) => {
+          const kegsMap = cliente.kegs || {};
+          const kegsArray = Object.entries(kegsMap).map(([kegKey, keg]: [string, any]) => ({
+            id: kegKey,
+            ...keg,
+            cliente: cliente.nombre, // Agregar el nombre del cliente al keg
+          }));
+          return {
+
+            nombre: cliente.nombre,
+            kegs: kegsArray,
+          };
+        });
+
+        // Actualiza los estados con los datos procesados
+        clientesArray.forEach((cliente) => agregarCliente(cliente));
+        const allKegs = clientesArray.flatMap((cliente) => cliente.kegs);
+        setKegs( allKegs); // Usa el array de kegs del documento o el combinado de todos los clientes
+
         const productos = data.productos;
 
         // Asegúrate de que los datos sean arrays antes de renderizarlos
-        const clientesArray = Array.isArray(clientes) ? clientes : Object.values(clientes || {});
-        const kegsArray = Array.isArray(kegs) ? kegs : Object.values(kegs || {});
         const productosArray = Array.isArray(productos) ? productos : Object.values(productos || {});
 
-        // Actualiza los estados con los arrays transformados
-        clientesArray.forEach(cliente => agregarCliente(cliente));
-        setKegs(kegsArray);
         productosArray.forEach(producto => agregarProducto(producto));
 
         const users = data.users;
@@ -119,8 +138,19 @@ export default function VerKegs() {
         <h4>Clientes</h4>
         {
           clientes.map((cliente, index) => (
-            <div key={index}>
-              <h4>{cliente}</h4>
+            <div key={index} style={{ border: "1px solid black", margin: "10px", padding: "10px" }}>
+              <h4>Nombre/ID: {cliente.nombre}</h4>
+              <p>Kegs en su negocio:</p>
+              <ul>
+                {cliente.kegs.map((keg, index) => (
+                  <li key={index}>
+                    <p>ID: {keg.id}</p>
+                    <p>Producto: {keg.producto}</p>
+                    <p>Entregado: {keg.entrega}</p>
+                    <p>Lote: {keg.lote}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))
         }
@@ -140,6 +170,7 @@ export default function VerKegs() {
                 </>
               )}
               <p>Ubicación: {keg.ubicacion}</p>
+              <p>Cliente: {keg.cliente}</p>
             </div>
           ))
         }

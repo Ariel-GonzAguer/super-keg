@@ -11,7 +11,7 @@ const useKegStore = create<KegStoreState>()(
       // estados
       kegsIDs: ["cerverceria-0-id-000"], // array de ids de kegs escaneados
       productos: [], // array de productos
-      clientes: [], // array de clientes
+      clientes: [], // array de clientes con sus kegs
 
       // acciones
       agregarIDKegs: (id: any) =>
@@ -31,8 +31,19 @@ const useKegStore = create<KegStoreState>()(
 
       agregarCliente: (cliente: any) =>
         set((state: any) => {
-          if (!state.clientes.includes(cliente)) {
-            state.clientes.push(cliente); // agrega el cliente al array si no existe
+          // Usar el nombre del cliente como ID
+          const clienteId = cliente.nombre;
+          const existingCliente = state.clientes.find((c: any) => c.id === clienteId);
+          if (!existingCliente) {
+            state.clientes.push({
+              id: clienteId, // Usar el nombre como ID
+              ...cliente,
+            });
+            console.log(`Cliente agregado: ${cliente.nombre} (ID: ${clienteId})`);
+          } else {
+            // Actualizar los kegs del cliente existente si es necesario
+            existingCliente.kegs = cliente.kegs;
+            console.log(`Cliente actualizado: ${cliente.nombre} (ID: ${clienteId})`);
           }
         }),
 
