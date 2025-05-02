@@ -1,11 +1,12 @@
 // hooks
 import { useState } from "react";
 
+// middleware
+import { authMiddleware } from "../middleware/authMiddleware";
+
 // firebase - autenticación
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
 
 // enrutado
 import { useNavigate } from "@arielgonzaguer/michi-router";
@@ -32,59 +33,29 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // 1. Primero autenticar al usuario
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      // Lógica de autenticación
+      await authMiddleware(
+        async () => {
+          signInWithEmailAndPassword(auth, email, password)
+        },
+        empresa,
+        email
+      );
 
-      if (!user) {
-        setError("Error al iniciar sesión");
-        return;
-      }
+      // Actualiza el estado del usuario en la store
+      setUser({ email, empresa });
 
-      console.log("Usuario autenticado con correo:", user.email);
-
-      // 2. Ahora verificar si tiene acceso al documento de la empresa
-      try {
-        const userDocRef = doc(db, "clientes", empresa);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          console.log("Documento encontrado en Firestore:", userDoc.data());
-          const userData = userDoc.data();
-          const userEmails = [
-            userData?.users?.administracion?.correo,
-            userData?.users?.entregas?.correo,
-            userData?.users?.produccion?.correo,
-          ].filter(Boolean); // Eliminar valores nulos o undefined
-
-          console.log("Correos permitidos:", userEmails);
-
-          if (userEmails.includes(email)) {
-            console.log("Correo del usuario autenticado permitido:", email);
-            // Actualizar el estado del usuario en el store
-            setUser({ data: user, email: email, empresa: empresa });
-            navigate("/ver-kegs");
-          } else {
-            // Si el correo no está en la lista, cerrar sesión
-            await auth.signOut();
-            setError("No tienes acceso a esta aplicación con este correo electrónico.");
-          }
-        } else {
-          // Si el documento no existe, cerrar sesión
-          await auth.signOut();
-          setError("No existe la empresa especificada o no tienes acceso a ella.");
-        }
-      } catch (firestoreError) {
-        console.error("Error al acceder a Firestore:", firestoreError);
-        await auth.signOut();
-        setError("Error al verificar los permisos en Firestore.");
-      }
-    } catch (authError: any) {
-      console.error("Error al autenticar:", authError);
-      setError(authError.message || "Error al iniciar sesión. Verifica tus credenciales.");
+      // Redirige a la página principal después de iniciar sesión
+      navigate("/ver-kegs");
+    } catch (error: any) {
+      console.error("Error al iniciar sesión:", error);
+      setError("Error al iniciar sesión. Verifica tus credenciales.");
     } finally {
       setLoading(false);
     }
+
+
+
   };
 
   return (
