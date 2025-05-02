@@ -17,9 +17,7 @@ const useKegStore = create<KegStoreState>()(
     immer((set) => ({
       // estados
       personaUsuaria: "", // nombre de la persona usuaria
-      IDsKegsEscaneados: [
-        /*"cerverceria-0-id-000"*/
-      ], // array de ids de kegs escaneados
+      IDsKegsEscaneados: [], // array de ids de kegs escaneados
       productos: {}, // objeto de productos
       clientes: {}, // array de clientes con sus kegs
       kegsTotales: {}, // array de kegs totales
@@ -27,8 +25,8 @@ const useKegStore = create<KegStoreState>()(
       // acciones locales
       agregarIDKegsEscaneados: (id: any) =>
         set((state: any) => {
-          if (!state.kegsIDs.includes(id)) {
-            state.kegsIDs.push(id); // agrega el id al array si no existe
+          if (!state.IDsKegsEscaneados.includes(id)) {
+            state.IDsKegsEscaneados.push(id); // agrega el id al array si no existe
           }
         }),
 
@@ -65,7 +63,7 @@ const useKegStore = create<KegStoreState>()(
 
       limpiarKegsEscaneados: () =>
         set((state: any) => {
-          state.kegsIDs = []; // limpia el array de ids
+          state.IDsKegsEscaneados = []; // limpia el array de ids
         }),
 
       // Función para obtener datos de Firestore y actualizar esta store

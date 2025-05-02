@@ -1,5 +1,5 @@
 // hooks
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 
 // estilos
 
@@ -67,6 +67,11 @@ export default function VerKegs() {
               {
                 keg.estado === "lleno" && (
                   <p>Fecha de llenado: {keg.ultimaModificacion}</p>
+                )
+              }
+              {
+                keg.estado === "recogido" && (
+                  <p>Fecha de recogida: {keg.ultimaModificacion}</p>
                 )
               }
               <p>Ubicación: {keg.ubicacion}</p>

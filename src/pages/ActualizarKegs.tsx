@@ -21,7 +21,7 @@ function App() {
   const [fullKeg, setFullKeg] = useState<Keg | null>(null);
 
   // store
-  const { kegsIDs, productos, clientes, limpiarStore } = useKegStore();
+  const { IDsKegsEscaneados, productos, clientes, limpiarKegsEscaneados } = useKegStore();
   const { user } = useAuthStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -48,15 +48,15 @@ function App() {
       const data = docSnap.data();
 
       console.log("Datos a actualizar:", {
-        estado: fullKeg?.estado || EstadosKeg.SUCIO,
-        fechaLlenado: fullKeg?.fechaLlenado || new Date().toISOString(),
+        estado: fullKeg?.estado || EstadosKeg,
+        ultimaModificacion: fullKeg?.ultimaModificacion || new Date().toISOString(),
         lote: fullKeg?.lote || "Lote no especificado",
         producto: fullKeg?.producto || "Producto no especificado",
         ubicacion: fullKeg?.ubicacion || "Ubicacion no especificada",
       });
-      console.log("IDs de kegs a actualizar:", kegsIDs);
+      console.log("IDs de kegs a actualizar:", IDsKegsEscaneados);
 
-      kegsIDs.forEach((kegID) => {
+      IDsKegsEscaneados.forEach((kegID) => {
         const kegIndex = Object.keys(data.kegs).find(
           (key) => data.kegs[key].id === kegID
         );
@@ -64,8 +64,8 @@ function App() {
         if (kegIndex) {
           data.kegs[kegIndex] = {
             ...data.kegs[kegIndex],
-            estado: fullKeg?.estado || EstadosKeg.SUCIO,
-            fechaLlenado: fullKeg?.fechaLlenado || new Date().toISOString(),
+            estado: fullKeg?.estado || EstadosKeg,
+            ultimaModificacion: fullKeg?.ultimaModificacion || new Date().toISOString(),
             lote: fullKeg?.lote || "Lote no especificado",
             producto: fullKeg?.producto || "Producto no especificado",
             ubicacion: fullKeg?.ubicacion || "Ubicacion no especificada",
@@ -77,7 +77,7 @@ function App() {
 
       await batch.commit();
       setMensaje("Kegs actualizados correctamente.");
-      limpiarStore();
+      limpiarKegsEscaneados();
     } catch (err) {
       console.error(err);
       setMensaje("Error al actualizar los kegs.");
@@ -89,9 +89,9 @@ function App() {
       <h1>Escanear Kegs</h1>
       <QrScanner />
 
-      <h2>Escaneados: {kegsIDs.length}</h2>
+      <h2>Escaneados: {IDsKegsEscaneados.length}</h2>
       <ul>
-        {kegsIDs.map((keg, index) => (
+        {IDsKegsEscaneados.map((keg, index) => (
           <li key={index}>ID: {keg}</li>
         ))}
       </ul>
@@ -103,15 +103,15 @@ function App() {
           id="estado"
           onChange={handleInputChange}
         >
-          <option value={EstadosKeg.SUCIO}>Sucio</option>
           <option value={EstadosKeg.LLENO}>Lleno</option>
           <option value={EstadosKeg.LIMPIO}>Limpiado</option>
           <option value={EstadosKeg.ENTREGADO}>Entregado</option>
           <option value={EstadosKeg.EN_MANTENIMIENTO}>En mantenimiento</option>
+          <option value={EstadosKeg.RECOGIDO}>Recogido</option>
         </select>
 
-        <label htmlFor="fechaLlenado">Fecha de llenado:</label>
-        <input type="date" id="fechaLlenado" name="fechaLlenado" onChange={handleInputChange} />
+        <label htmlFor="ultimaModificacion">Última Modificacion:</label>
+        <input type="date" id="ultimaModificacion" name="ultimaModificacion" onChange={handleInputChange} />
 
         <label htmlFor="lote">Lote:</label>
         <input type="text" id="lote" name="lote" onChange={handleInputChange} />
@@ -122,21 +122,21 @@ function App() {
           id="producto"
           onChange={handleInputChange}
         >
-          {productos.map((producto, index) => (
-            <option key={index} value={producto}>{producto}</option>
+          {Object.values(productos).map((producto, index) => (
+            <option key={index} value={typeof producto === 'string' ? producto : JSON.stringify(producto)}>{typeof producto === 'string' ? producto : JSON.stringify(producto)}</option>
           ))}
         </select>
 
         <label htmlFor="ubicacion">Ubicación:</label>
         <select name="ubicacion" id="ubicacion" onChange={handleInputChange}>
           {
-            clientes.map((cliente, index) => (
-              <option key={index} value={cliente}>{cliente}</option>
+            Object.values(clientes).map((cliente, index) => (
+              <option key={index} value={cliente.nombre}>{cliente.nombre}</option>
             ))}
         </select>
       </form>
 
-      <button onClick={actualizarKegs} disabled={kegsIDs.length === 0}>
+      <button onClick={actualizarKegs} disabled={IDsKegsEscaneados.length === 0}>
         Actualizar Firestore
       </button>
 

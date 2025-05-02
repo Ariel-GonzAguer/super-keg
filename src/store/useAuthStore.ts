@@ -24,7 +24,6 @@ const useAuthStore = create<AuthStoreState>()(
     })),
     {
       name: "useAuthStore", // Nombre del local storage
-      partialize: (state) => ({ user: state.user }), // Solo persiste el estado `user`
     }
   )
 );

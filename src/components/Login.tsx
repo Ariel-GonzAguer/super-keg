@@ -1,5 +1,5 @@
 // hooks
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 // middleware
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -16,9 +16,9 @@ import useAuthStore from "../store/useAuthStore";
 
 export default function Login() {
   // estados locales
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [empresa, setEmpresa] = useState("");
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const empresaRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,12 +27,16 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      const email = emailRef.current?.value || "";
+      const password = passwordRef.current?.value || "";
+      const empresa = empresaRef.current?.value || "";
+
       // Lógica de autenticación
       await authMiddleware(
         async () => {
@@ -69,8 +73,7 @@ export default function Login() {
           <label htmlFor="email">Email</label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            ref={emailRef}
             required
             placeholder="Email"
             name="email"
@@ -82,8 +85,7 @@ export default function Login() {
           <label htmlFor="password">Contraseña</label>
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            ref={passwordRef}
             required
             placeholder="Password"
             name="password"
@@ -95,8 +97,7 @@ export default function Login() {
           <label htmlFor="empresa">Empresa</label>
           <input
             type="text"
-            value={empresa}
-            onChange={(e) => setEmpresa(e.target.value)}
+            ref={empresaRef}
             required
             placeholder="empresa"
             name="empresa"
@@ -108,6 +109,10 @@ export default function Login() {
           {loading ? "Iniciando sesión..." : "Login"}
         </button>
       </form>
+
+      {loading && (
+        <h5>Cargando</h5>
+      )}
     </section>
   );
 }

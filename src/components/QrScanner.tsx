@@ -15,24 +15,27 @@ export default function QRScanner() {
   const [error, setError] = useState<string | null>(null);
 
   // store
-  const { agregarIDKegs } = useKegStore(); // Cambiado a useStore para usar el store de zustand
+  const { agregarIDKegsEscaneados } = useKegStore(); // Cambiado a useStore para usar el store de zustand
 
   return (
     <section className={styles.QRScanner}>
       <Scanner
         onScan={(qrCode) => {
+          console
           if (qrCode) {
             try {
               const parsedData = JSON.parse(qrCode[0]?.rawValue || ""); // Analiza el JSON del QR
               const idKeg = parsedData.id;
-              agregarIDKegs(idKeg); // Agrega el ID al store
+              agregarIDKegsEscaneados(idKeg); // Agrega el ID al store
               console.log(idKeg);
             } catch (e) {
               setError("El QR no contiene un JSON válido");
+              alert("El QR no contiene un JSON válido");
               console.error("Error al analizar el JSON del QR", e);
             }
           } else {
             setError("No se encontró un código QR");
+            alert("No se encontró un código QR");
             console.error("No se encontró un código QR", error);
           }
         }}
