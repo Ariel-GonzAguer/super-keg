@@ -1,5 +1,5 @@
 // hooks
-import { useEffect } from "react";
+// import { useState } from "react";
 
 // estilos
 
@@ -15,14 +15,10 @@ import useKegStore from "../store/useKegsStore";
 export default function VerKegs() {
   // enrutado
   const navigate = useNavigate();
-  
+
   // store
   const { personaUsuaria, productos, clientes, kegsTotales } = useKegStore();
   
-  useEffect(() => {
-    console.log(productos)
-  }, [productos]);
-
   return (
     <section>
       <LogOutButton />

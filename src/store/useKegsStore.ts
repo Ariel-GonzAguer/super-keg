@@ -23,10 +23,10 @@ const useKegStore = create<KegStoreState>()(
       kegsTotales: {}, // array de kegs totales
 
       // acciones locales
-      agregarIDKegsEscaneados: (id: any) =>
+      agregarIDKegsEscaneados: (keg: { id: string; [key: string]: any }) =>
         set((state: any) => {
-          if (!state.IDsKegsEscaneados.includes(id)) {
-            state.IDsKegsEscaneados.push(id); // agrega el id al array si no existe
+          if (!state.IDsKegsEscaneados.includes(keg.id)) {
+            state.IDsKegsEscaneados.push(keg); // agrega el id al array si no existe
           }
         }),
 

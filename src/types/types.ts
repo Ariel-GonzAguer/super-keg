@@ -27,11 +27,11 @@ export interface Producto {
 
 export interface KegStoreState {
   personaUsuaria: string;
-  IDsKegsEscaneados: string[];
+  IDsKegsEscaneados: Keg[];
   productos: Record<string, Producto>;
   clientes: Record<string, Cliente>;
   kegsTotales: Record<string, Keg>;
-  agregarIDKegsEscaneados: (id: string) => void;
+  agregarIDKegsEscaneados: (keg: { id: string; [key: string]: any }) => void;
   agregarNuevoProducto: (producto: string) => void;
   agregarNuevoCliente: (cliente: { nombre: string; kegs: any[] }) => void;
   limpiarKegsEscaneados: () => void;
@@ -39,7 +39,6 @@ export interface KegStoreState {
 }
 
 interface User {
-  data: {};
   email: string;
   empresa: string;
 }

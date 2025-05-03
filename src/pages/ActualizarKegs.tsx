@@ -3,13 +3,14 @@ import { useState } from "react";
 
 // componentes
 import QrScanner from "../components/QrScanner";
+import ActualizarKegsForm from "../components/ActualizarKegsForm";
 
 // firebase
 import { db } from "../firebase/firebaseConfig";
 import { doc, writeBatch, getDoc } from "firebase/firestore";
 
 // tipos
-import { Keg, EstadosKeg } from "../types/types";
+import { EstadosKeg } from "../types/types";
 
 // store
 import useKegStore from "../store/useKegsStore";
@@ -18,19 +19,18 @@ import useAuthStore from "../store/useAuthStore";
 function App() {
   // estados locales
   const [mensaje, setMensaje] = useState("");
-  const [fullKeg, setFullKeg] = useState<Keg | null>(null);
+  const [fullKeg, setFullKeg] = useState({
+    estado: EstadosKeg.LLENO,
+    ultimaModificacion: "",
+    lote: "",
+    producto: "",
+    ubicacion: "",
+  });
 
   // store
-  const { IDsKegsEscaneados, productos, clientes, limpiarKegsEscaneados } = useKegStore();
+  const { IDsKegsEscaneados, limpiarKegsEscaneados } = useKegStore();
   const { user } = useAuthStore();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFullKeg((prev) => ({
-      ...prev,
-      [name]: value || "",
-    } as Keg));
-  };
 
   async function actualizarKegs() {
     const batch = writeBatch(db);
@@ -66,8 +66,8 @@ function App() {
             ...data.kegs[kegIndex],
             estado: fullKeg?.estado || EstadosKeg,
             ultimaModificacion: fullKeg?.ultimaModificacion || new Date().toISOString(),
-            lote: fullKeg?.lote || "Lote no especificado",
-            producto: fullKeg?.producto || "Producto no especificado",
+            lote: fullKeg?.estado === EstadosKeg.ENTREGADO ? data.kegs[kegIndex].lote : fullKeg?.lote || "Lote no especificado",
+            producto: fullKeg?.estado === EstadosKeg.ENTREGADO ? data.kegs[kegIndex].producto : fullKeg?.producto || "Producto no especificado",
             ubicacion: fullKeg?.ubicacion || "Ubicacion no especificada",
           };
         }
@@ -92,53 +92,18 @@ function App() {
       <h2>Escaneados: {IDsKegsEscaneados.length}</h2>
       <ul>
         {IDsKegsEscaneados.map((keg, index) => (
-          <li key={index}>ID: {keg}</li>
+          <li key={index}>ID: {keg.id}</li>
         ))}
       </ul>
 
-      <form action="" >
-        <label htmlFor="estado">Estado:</label>
-        <select
-          name="estado"
-          id="estado"
-          onChange={handleInputChange}
-        >
-          <option value={EstadosKeg.LLENO}>Lleno</option>
-          <option value={EstadosKeg.LIMPIO}>Limpiado</option>
-          <option value={EstadosKeg.ENTREGADO}>Entregado</option>
-          <option value={EstadosKeg.EN_MANTENIMIENTO}>En mantenimiento</option>
-          <option value={EstadosKeg.RECOGIDO}>Recogido</option>
-        </select>
+      <ActualizarKegsForm setFullKeg={setFullKeg} fullKeg={fullKeg} />
 
-        <label htmlFor="ultimaModificacion">Última Modificacion:</label>
-        <input type="date" id="ultimaModificacion" name="ultimaModificacion" onChange={handleInputChange} />
 
-        <label htmlFor="lote">Lote:</label>
-        <input type="text" id="lote" name="lote" onChange={handleInputChange} />
-
-        <label htmlFor="producto">Producto</label>
-        <select
-          name="producto"
-          id="producto"
-          onChange={handleInputChange}
-        >
-          {Object.values(productos).map((producto, index) => (
-            <option key={index} value={typeof producto === 'string' ? producto : JSON.stringify(producto)}>{typeof producto === 'string' ? producto : JSON.stringify(producto)}</option>
-          ))}
-        </select>
-
-        <label htmlFor="ubicacion">Ubicación:</label>
-        <select name="ubicacion" id="ubicacion" onChange={handleInputChange}>
-          {
-            Object.values(clientes).map((cliente, index) => (
-              <option key={index} value={cliente.nombre}>{cliente.nombre}</option>
-            ))}
-        </select>
-      </form>
 
       <button onClick={actualizarKegs} disabled={IDsKegsEscaneados.length === 0}>
         Actualizar Firestore
       </button>
+      <button onClick={limpiarKegsEscaneados}>Borrar lista</button>
 
       {mensaje && <p>{mensaje}</p>}
     </div>

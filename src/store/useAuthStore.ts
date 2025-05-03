@@ -1,15 +1,18 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
-import { AuthStoreState } from "../types/types";
 
+import { AuthStoreState } from "../types/types";
 
 const useAuthStore = create<AuthStoreState>()(
   persist(
     immer((set) => ({
-      user: null,
+      user: {
+        email: "",
+        empresa: "",
+      },
 
       setUser: (user) =>
         set((state) => {
@@ -27,19 +30,5 @@ const useAuthStore = create<AuthStoreState>()(
     }
   )
 );
-
-// Configura el listener de autenticación
-onAuthStateChanged(auth, (currentUser) => {
-  const setUser = useAuthStore.getState().setUser;
-  if (!currentUser) {
-    setUser(null);
-  } else {
-    setUser({
-      data: {},
-      email: currentUser.email || "",
-      empresa: "",
-    });
-  }
-});
 
 export default useAuthStore;
