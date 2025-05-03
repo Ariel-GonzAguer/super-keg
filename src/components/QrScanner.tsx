@@ -16,7 +16,7 @@ export default function QRScanner() {
   const [error, setError] = useState<string | null>(null);
 
   // store
-  const { agregarIDKegsEscaneados, kegsTotales } = useKegStore(); // Cambiado a useStore para usar el store de zustand
+  const { agregarIDKegsEscaneados, kegsTotales } = useKegStore(); 
 
   return (
     <section className={styles.QRScanner}>
@@ -32,25 +32,22 @@ export default function QRScanner() {
 
               if (keg) {
                 agregarIDKegsEscaneados(keg); // Agrega el objeto del keg al store
-                console.log("Keg encontrado y agregado al estado:", keg);
               } else {
                 setError("El keg no existe en el estado de kegs totales.");
                 alert("El keg no existe en el estado de kegs totales.");
               }
             } catch (e) {
               setError("El QR no contiene un JSON válido");
-              alert("El QR no contiene un JSON válido");
-              console.error("Error al analizar el JSON del QR", e);
+              alert(`El QR no contiene un JSON válido → ${e}`);
             }
           } else {
             setError("No se encontró un código QR");
-            alert("No se encontró un código QR");
-            console.error("No se encontró un código QR", error);
+            alert(`No se encontró un código QR → ${error}`);
           }
         }}
         onError={(error: any) => {
           setError(error.message);
-          console.error("Error al escanear el código QR", error);
+          alert(`Error al escanear el código QR → ${error.message}`);
         }}
         allowMultiple={false}
       />
