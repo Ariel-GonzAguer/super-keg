@@ -4,6 +4,7 @@ export enum EstadosKeg {
   LIMPIO = "limpio",
   LLENO = "lleno",
   RECOGIDO = "recogido",
+  SUCIO = "sucio",
 }
 
 export interface Keg {

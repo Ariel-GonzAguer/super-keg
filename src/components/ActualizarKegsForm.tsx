@@ -69,13 +69,17 @@ export default function ActualizarKegsForm() {
         );
 
         if (kegKey) {
+          const nuevaUbicacion = estadoRef.current === "recogido"
+            ? Object.values(clientes).find(cliente => /\(origen\)/i.test(cliente.nombre))?.nombre || "Ubicación no especificada"
+            : ubicacionRef.current || data.kegs[kegKey].ubicacion || "Ubicación no especificada";
+
           data.kegs[kegKey] = {
             ...data.kegs[kegKey],
             estado: estadoRef.current || data.kegs[kegKey].estado,
             ultimaModificacion: ultimaModificacionRef.current || new Date().toISOString(),
             lote: loteRef.current || data.kegs[kegKey].lote || "Lote no especificado",
             producto: productoRef.current || data.kegs[kegKey].producto || "Producto no especificado",
-            ubicacion: ubicacionRef.current || data.kegs[kegKey].ubicacion || "Ubicación no especificada",
+            ubicacion: nuevaUbicacion,
           };
         } else {
           console.warn(`No se encontró el keg con ID: ${kegID}`);
@@ -105,17 +109,21 @@ export default function ActualizarKegsForm() {
               onChange={(e) => {
                 estadoRef.current = e.target.value as EstadosKeg;
               }}
+              required
+              defaultValue={"Seleccione un estado"}
             >
+              <option value={EstadosKeg.LLENO}>Seleccione un estado</option>
               <option value={EstadosKeg.LLENO}>Lleno</option>
               <option value={EstadosKeg.LIMPIO}>Limpio</option>
               <option value={EstadosKeg.ENTREGADO}>Entregado</option>
               <option value={EstadosKeg.EN_MANTENIMIENTO}>En mantenimiento</option>
               <option value={EstadosKeg.RECOGIDO}>Recogido</option>
+              <option value={EstadosKeg.SUCIO}>Sucio</option>
             </select>
             <button type="button" onClick={methods.next}>Siguiente</button>
-            <button type="button" onClick={methods.prev}>Volver</button>
           </>
         ))}
+
         {methods.when("paso-2-DefinirÚltimaModificación", (step) => (
           <>
             <label htmlFor="ultimaModificacion">{step.title}</label>
@@ -126,11 +134,16 @@ export default function ActualizarKegsForm() {
             <button type="button" onClick={methods.prev}>Volver</button>
           </>
         ))}
+
         {methods.when(["paso-3-DefinirUbicación", estadoRef.current === "lleno" || estadoRef.current === "entregado" || estadoRef.current === "limpio"], (step) => (
           <>
             <label htmlFor="ubicacion">{step.title}</label>
             <select name="ubicacion" id="ubicacion"
-              onChange={(e) => { ubicacionRef.current = e.target.value; }}>
+              onChange={(e) => { ubicacionRef.current = e.target.value; }}
+              required
+              defaultValue={"Seleccione una ubicación"}
+            >
+              <option value="">Seleccione una ubicación</option>
               {
                 Object.values(clientes).map((cliente, index) => (
                   <option key={index} value={cliente.nombre}>{cliente.nombre}</option>
@@ -141,6 +154,7 @@ export default function ActualizarKegsForm() {
             <button type="button" onClick={methods.prev}>Volver</button>
           </>
         ))}
+
         {methods.when(["paso-4-DefinirLote", estadoRef.current === "lleno"], (step) => (
           <>
             <label htmlFor="lote">{step.title}</label>
@@ -151,6 +165,7 @@ export default function ActualizarKegsForm() {
             <button type="button" onClick={methods.prev}>Volver</button>
           </>
         ))}
+
         {methods.when(["paso-5-DefinirProducto", estadoRef.current === "lleno" || estadoRef.current === "entregado"], (step) => (
           <>
             <label htmlFor="producto">{step.title}</label>
@@ -158,7 +173,11 @@ export default function ActualizarKegsForm() {
               name="producto"
               id="producto"
               onChange={(e) => { productoRef.current = e.target.value; }}
+              required
+              defaultValue={"Seleccione un producto"}
             >
+              <option value="">Seleccione un producto</option>
+
               {Object.values(productos).map((producto, index) => (
                 <option key={index} value={typeof producto === 'string' ? producto : JSON.stringify(producto)}>{typeof producto === 'string' ? producto : JSON.stringify(producto)}</option>
               ))}

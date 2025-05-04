@@ -13,9 +13,5 @@ export default function Protected({ children }: { children: ReactNode }) {
     }
   }, [user, navigate]);
 
-  if (!user) {
-    return null; // ¿ tal vez mostrar un spinner o mensaje de carga ?
-  }
-
-  return children;
+  return user ? children : null; // Devuelve los hijos solo si el usuario está autenticado
 }
