@@ -8,18 +8,17 @@
 
 // store
 import useKegStore from "../store/useKegsStore";
+import useAuthStore from "../store/useAuthStore";
 
 export default function VerKegs() {
   // store
-  const { personaUsuaria, productos, kegsTotales } = useKegStore();
+  const { kegsTotales } = useKegStore();
+  const { user } = useAuthStore();
 
   return (
     <section>
-      <h2>Data FIRESTORE</h2>
-      <h3>Usuario: {personaUsuaria}</h3>
-      
       <div>
-        <h4>Kegs</h4>
+        <h4>Kegs totales de {user?.empresa}</h4>
         {
           Object.values(kegsTotales).map((keg, index) => (
             <div key={index}>
@@ -43,17 +42,6 @@ export default function VerKegs() {
                 )
               }
               <p>Ubicación: {keg.ubicacion}</p>
-            </div>
-          ))
-        }
-      </div>
-
-      <div>
-        <h4>Productos</h4>
-        {
-          Object.values(productos).map((producto, index) => (
-            <div key={index}>
-              <p>Nombre: {typeof producto === 'string' ? producto : JSON.stringify(producto)}</p>
             </div>
           ))
         }

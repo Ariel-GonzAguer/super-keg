@@ -27,6 +27,7 @@ export default function ActualizarKegsForm() {
 
   // store
   const { productos, clientes, IDsKegsEscaneados, limpiarKegsEscaneados } = useKegStore();
+  const { fetchDatos } = useKegStore(); // Añadimos fetchDatos
 
   // estados de los kegs escaneados
   const estadoRef = useRef<EstadosKeg>(EstadosKeg.LLENO);
@@ -89,6 +90,8 @@ export default function ActualizarKegsForm() {
       batch.update(docRef, { kegs: data.kegs });
 
       await batch.commit();
+      // Actualizamos el estado local después de actualizar Firestore
+      await fetchDatos(user.empresa, user.email || "");
       mensajeRef.current = "Kegs actualizados correctamente.";
       limpiarKegsEscaneados();
     } catch (err) {
