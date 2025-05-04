@@ -5,16 +5,18 @@ import ActualizarKegs from "../pages/ActualizarKegs";
 import VerKegs from "../pages/VerKegs";
 import AgregarData from "../pages/AgregarData";
 import NotFoud404 from "../components/NotFound404";
+import Index from "../pages/Index";
 
 // protección de rutas
 import Protected from "./Protected";
 
 
 // layout
-// import BaseLayout from "../layouts/BaseLayout";
+import BaseLayout from "../layouts/BaseLayout";
 
 const rutas = [
   { path: "/", component: <Home /> },
+  { path: "/index", component: <Protected><Index /></Protected> },
   { path: "/actualizar-kegs", component: <Protected><ActualizarKegs /></Protected> },
   { path: "/ver-kegs", component: <Protected><VerKegs /> </Protected> },
   { path: "/agregar-data", component: <Protected><AgregarData /></Protected> },
@@ -22,7 +24,7 @@ const rutas = [
 
 export default function MichiRouter() {
   return (
-    <RouterProvider routes={rutas} /*layout={BaseLayout}*/>
+    <RouterProvider routes={rutas} layout={BaseLayout}>
       <NotFoud404 />
     </RouterProvider>
   );

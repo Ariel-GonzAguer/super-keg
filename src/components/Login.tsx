@@ -50,15 +50,13 @@ export default function Login() {
       setUser({ email, empresa });
 
       // Redirige a la página principal después de iniciar sesión
-      navigate("/ver-kegs");
+      navigate("/index");
     } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
       setError("Error al iniciar sesión. Verifica tus credenciales.");
     } finally {
       setLoading(false);
     }
-
-
 
   };
 
