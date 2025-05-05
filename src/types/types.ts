@@ -31,7 +31,8 @@ export interface KegStoreState {
   clientes: Record<string, Cliente>;
   kegsTotales: Record<string, Keg>;
   agregarIDKegsEscaneados: (keg: { id: string; [key: string]: any }) => void;
-  agregarNuevoProducto: (producto: string) => void;
+  agregarNuevoProducto: (empresa: string, producto: Producto) => Promise<boolean>;
+  eliminarProducto: (empresa: string, nombreProducto: string) => Promise<boolean>;
   agregarNuevoCliente: (empresa: string, nuevoCliente: Cliente) => Promise<boolean>;
   eliminarCliente: (empresa: string, nombreCliente: string) => Promise<boolean>;
   limpiarKegsEscaneados: () => void;

@@ -28,12 +28,35 @@ const useKegStore = create<KegStoreState>()(
           }
         }),
 
-      agregarNuevoProducto: (producto: any) =>
-        set((state: any) => {
-          if (!state.productos.includes(producto)) {
-            state.productos.push(producto); // agrega el producto al array si no existe
+      agregarNuevoProducto: async (empresa: string, nuevoProducto: Cliente) => {
+        try {
+          const docRef = doc(db, "clientes", empresa);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const productosActualizados = {
+              ...data.productos,
+              nombre: nuevoProducto.nombre,
+            };
+
+            await updateDoc(docRef, {
+              productos: productosActualizados,
+            });
+
+            // Actualizar el estado local
+            set((state) => {
+              state.productos = productosActualizados;
+            });
+
+            return true;
           }
-        }),
+          return false;
+        } catch (error) {
+          console.error("Error al crear producto:", error);
+          return false;
+        }
+      },
 
       limpiarKegsEscaneados: () =>
         set((state: any) => {
@@ -50,12 +73,12 @@ const useKegStore = create<KegStoreState>()(
             const clientesActualizados = {
               ...data.clientes,
               [nuevoCliente.nombre]: {
-                nombre: nuevoCliente.nombre
-              }
+                nombre: nuevoCliente.nombre,
+              },
             };
 
             await updateDoc(docRef, {
-              clientes: clientesActualizados
+              clientes: clientesActualizados,
             });
 
             // Actualizar el estado local
@@ -79,11 +102,12 @@ const useKegStore = create<KegStoreState>()(
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            const { [nombreCliente]: clienteEliminado, ...clientesRestantes } = data.clientes;
+            const { [nombreCliente]: clienteEliminado, ...clientesRestantes } =
+              data.clientes;
 
             // Actualizar Firestore
             await updateDoc(docRef, {
-              clientes: clientesRestantes
+              clientes: clientesRestantes,
             });
 
             // Actualizar el estado local
@@ -96,6 +120,46 @@ const useKegStore = create<KegStoreState>()(
           return false;
         } catch (error) {
           console.error("Error al eliminar cliente:", error);
+          return false;
+        }
+      },
+
+      eliminarProducto: async (empresa: string, nombreProducto: string) => {
+        try {
+          const docRef = doc(db, "clientes", empresa);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const productos = data.productos || {};
+
+            // Encontrar la clave del producto que queremos eliminar
+            const productoKey = Object.entries(productos).find(([_, value]) =>
+              typeof value === "string"
+                ? value === nombreProducto
+                : (value as { nombre: string }).nombre === nombreProducto
+            )?.[0];
+
+            if (productoKey) {
+              // Crear un nuevo objeto sin el producto a eliminar
+              const { [productoKey]: _, ...productosRestantes } = productos;
+
+              // Actualizar Firestore
+              await updateDoc(docRef, {
+                productos: productosRestantes,
+              });
+
+              // Actualizar el estado local
+              set((state) => {
+                state.productos = productosRestantes;
+              });
+
+              return true;
+            }
+          }
+          return false;
+        } catch (error) {
+          console.error("Error al eliminar producto:", error);
           return false;
         }
       },
