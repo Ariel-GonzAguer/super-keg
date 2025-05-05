@@ -1,5 +1,5 @@
 // hooks
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // componentes
 import { defineStepper } from "@stepperize/react";
@@ -24,7 +24,6 @@ const { useStepper } = defineStepper(
 );
 
 export default function ActualizarKegsForm() {
-
   // store
   const { productos, clientes, IDsKegsEscaneados, limpiarKegsEscaneados } = useKegStore();
   const { fetchDatos } = useKegStore(); // Añadimos fetchDatos
@@ -36,6 +35,9 @@ export default function ActualizarKegsForm() {
   const loteRef = useRef<string>("");
   const productoRef = useRef<string>("");
   const mensajeRef = useRef<string>("");
+
+  // estado para botón de refrescar
+  const [refrescar, setRefrescar] = useState(false);
 
   // stepperize
   const methods = useStepper();
@@ -63,10 +65,8 @@ export default function ActualizarKegsForm() {
       }
 
       IDsKegsEscaneados.forEach((keg) => {
-        const kegID = typeof keg === 'object' ? keg.id : keg; // Asegurarse de obtener el ID correctamente
-
         const kegKey = Object.keys(data.kegs).find(
-          (key) => data.kegs[key].id === kegID
+          (key) => data.kegs[key].id === keg.id
         );
 
         if (kegKey) {
@@ -83,7 +83,7 @@ export default function ActualizarKegsForm() {
             ubicacion: nuevaUbicacion,
           };
         } else {
-          console.warn(`No se encontró el keg con ID: ${kegID}`);
+          console.warn(`No se encontró el keg con ID: ${keg.id}`);
         }
       });
 
@@ -93,6 +93,7 @@ export default function ActualizarKegsForm() {
       // Actualizamos el estado local después de actualizar Firestore
       await fetchDatos(user.empresa, user.email || "");
       mensajeRef.current = "Kegs actualizados correctamente.";
+      setRefrescar(!refrescar); // Cambiamos el estado para forzar la actualización del componente
       limpiarKegsEscaneados();
     } catch (err) {
       console.error(err);
@@ -193,7 +194,10 @@ export default function ActualizarKegsForm() {
       <button onClick={actualizarKegsFireStore} disabled={IDsKegsEscaneados.length === 0}>
         Actualizar Firestore
       </button>
-      <button onClick={limpiarKegsEscaneados}>Borrar lista</button>
+      <button onClick={limpiarKegsEscaneados} disabled={IDsKegsEscaneados.length === 0}>{IDsKegsEscaneados.length > 0 ? "Borrar kegs escaneados" : ""}</button>
+      {
+        refrescar && <button onClick={() => window.location.reload()}>Escanear más kegs</button>
+      }
       {mensajeRef.current && <p>{mensajeRef.current}</p>}
 
     </section>

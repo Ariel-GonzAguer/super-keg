@@ -4,13 +4,11 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // firestore
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 
 // tipos
-import { KegStoreState } from "../types/types";
-
-// importar y agregar tipos correspondientes
+import { KegStoreState, Cliente } from "../types/types";
 
 const useKegStore = create<KegStoreState>()(
   persist(
@@ -37,34 +35,70 @@ const useKegStore = create<KegStoreState>()(
           }
         }),
 
-      agregarNuevoCliente: (cliente: any) =>
-        set((state: any) => {
-          // Usar el nombre del cliente como ID
-          const clienteId = cliente.nombre;
-          const existingCliente = state.clientes.find(
-            (c: any) => c.id === clienteId
-          );
-          if (!existingCliente) {
-            state.clientes.push({
-              id: clienteId, // Usar el nombre como ID
-              ...cliente,
-            });
-            console.log(
-              `Cliente agregado: ${cliente.nombre} (ID: ${clienteId})`
-            );
-          } else {
-            // Actualizar los kegs del cliente existente si es necesario
-            existingCliente.kegs = cliente.kegs;
-            console.log(
-              `Cliente actualizado: ${cliente.nombre} (ID: ${clienteId})`
-            );
-          }
-        }),
-
       limpiarKegsEscaneados: () =>
         set((state: any) => {
           state.IDsKegsEscaneados = []; // limpia el array de ids
         }),
+
+      agregarNuevoCliente: async (empresa: string, nuevoCliente: Cliente) => {
+        try {
+          const docRef = doc(db, "clientes", empresa);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const clientesActualizados = {
+              ...data.clientes,
+              [nuevoCliente.nombre]: {
+                nombre: nuevoCliente.nombre
+              }
+            };
+
+            await updateDoc(docRef, {
+              clientes: clientesActualizados
+            });
+
+            // Actualizar el estado local
+            set((state) => {
+              state.clientes = clientesActualizados;
+            });
+
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error("Error al crear cliente:", error);
+          return false;
+        }
+      },
+
+      eliminarCliente: async (empresa: string, nombreCliente: string) => {
+        try {
+          const docRef = doc(db, "clientes", empresa);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const { [nombreCliente]: clienteEliminado, ...clientesRestantes } = data.clientes;
+
+            // Actualizar Firestore
+            await updateDoc(docRef, {
+              clientes: clientesRestantes
+            });
+
+            // Actualizar el estado local
+            set((state) => {
+              state.clientes = clientesRestantes;
+            });
+
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error("Error al eliminar cliente:", error);
+          return false;
+        }
+      },
 
       // Función para obtener datos de Firestore y actualizar esta store
       fetchDatos: async (empresa: string, email: string) => {
