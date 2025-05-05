@@ -8,10 +8,12 @@ import useAuthStore from "../store/useAuthStore";
 // hooks
 import { useState } from "react";
 
+// toast - sonner
+import { toast, Toaster } from "sonner";
+
 export default function Clientes() {
   // estados locales
   const [loading, setLoading] = useState(false);
-  const [mensaje, setMensaje] = useState("");
 
   // store
   const { clientes, kegsTotales, eliminarCliente } = useKegStore();
@@ -22,45 +24,51 @@ export default function Clientes() {
 
   const handleEliminarCliente = async (nombreCliente: string) => {
     if (!user?.empresa) {
-      setMensaje("Error: No se pudo identificar la empresa");
+      toast.error("Error: No se pudo identificar la empresa");
+      return;
+    }
+
+    // Evitar eliminación del cliente origen
+    if (/\(origen\)/i.test(nombreCliente)) {
+      toast.error("No se puede eliminar el cliente origen");
       return;
     }
 
     if (Object.values(kegsTotales).some(keg => keg.ubicacion === nombreCliente)) {
-      setMensaje("No se puede eliminar un cliente que tiene kegs asignados");
+      toast.error("No se puede eliminar un cliente que tiene kegs asignados");
       return;
     }
 
-    if (window.confirm(`¿Está seguro que desea eliminar al cliente ${nombreCliente}?`)) {
-      setLoading(true);
-      try {
-        const result = await eliminarCliente(user.empresa, nombreCliente);
-        if (result) {
-          setMensaje("Cliente eliminado exitosamente");
-        } else {
-          setMensaje("Error al eliminar el cliente");
+    toast.promise(
+      async () => {
+        setLoading(true);
+        try {
+          const result = await eliminarCliente(user.empresa, nombreCliente);
+          if (!result) {
+            throw new Error("Error al eliminar el cliente");
+          }
+          setLoading(false);
+          return result;
+        } catch (error) {
+          setLoading(false);
+          throw error;
         }
-      } catch (error) {
-        console.error(error);
-        setMensaje("Error al eliminar el cliente");
-      } finally {
-        setLoading(false);
+      },
+      {
+        loading: 'Eliminando cliente...',
+        success: 'Cliente eliminado exitosamente',
+        error: 'Error al eliminar el cliente',
       }
-    }
+    );
   };
 
   return (
     <section>
+      <Toaster position="top-center" richColors closeButton />
       <p>Esta es la página para ver los clientes y los kegs en sus negocios.</p>
       <p>Para agregar nuevos clientes dirígase a
         <span onClick={() => navigate("/agregar-clientes")}> Agregar Clientes</span>
       </p>
-
-      {mensaje && (
-        <p style={{ color: mensaje.includes("Error") ? "red" : "green", margin: "1rem 0" }}>
-          {mensaje}
-        </p>
-      )}
 
       <div>
         {
@@ -68,13 +76,48 @@ export default function Clientes() {
             <div key={index} style={{ border: "1px solid black", margin: "10px", padding: "10px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h4>Nombre: {cliente.nombre}</h4>
-                <button 
-                  onClick={() => handleEliminarCliente(cliente.nombre)}
+                <button
+                  onClick={() => {
+                    toast.custom((t) => (
+                      <div style={{ padding: "1rem", background: "white", border: "1px solid #ccc", borderRadius: "4px" }}>
+                        <p>¿Está seguro que desea eliminar al cliente {cliente.nombre}?</p>
+                        <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+                          <button
+                            onClick={() => {
+                              toast.dismiss(t);
+                              handleEliminarCliente(cliente.nombre);
+                            }}
+                            style={{
+                              backgroundColor: "#ff4444",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              cursor: "pointer"
+                            }}
+                          >
+                            Eliminar
+                          </button>
+                          <button
+                            onClick={() => toast.dismiss(t)}
+                            style={{
+                              backgroundColor: "#666",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              cursor: "pointer"
+                            }}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ));
+                  }}
                   disabled={loading}
-                  style={{ 
-                    backgroundColor: "#ff4444", 
-                    color: "white", 
-                    border: "none", 
+                  style={{
+                    backgroundColor: "#ff4444",
+                    color: "white",
+                    border: "none",
                     padding: "5px 10px",
                     cursor: loading ? "not-allowed" : "pointer"
                   }}
