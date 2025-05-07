@@ -12,8 +12,13 @@
   "dependencies": {
     "@arielgonzaguer/michi-router": "^1.3.0",
     "@emailjs/browser": "^4.4.1",
+<<<<<<< HEAD
     "@react-pdf/renderer": "^4.3.0",
+=======
+    "@midudev/tailwind-animations": "^0.2.0",
+>>>>>>> 46ed8916de7d7a81682313ca6dc7bc265961b3b4
     "@stepperize/react": "^5.1.5",
+    "@tailwindcss/vite": "^4.1.5",
     "@yudiel/react-qr-scanner": "^2.2.1",
     "buffer": "^6.0.3",
     "firebase": "^11.6.1",
@@ -21,6 +26,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sonner": "^2.0.3",
+    "tailwindcss": "^4.1.5",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

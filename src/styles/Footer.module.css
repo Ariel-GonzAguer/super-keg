@@ -1,8 +1,0 @@
-.Footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.3rem;
-  background-color: skyblue;
-  border-top: 2px solid black ;
-}
