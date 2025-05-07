@@ -17,6 +17,6 @@ export default function LogOutButton() {
 
 
   return (
-    <button onClick={handleLogOut}>Cerrar Sesión</button>
+    <button onClick={handleLogOut} className="border-2 border-black">Cerrar Sesión</button>
   )
 }

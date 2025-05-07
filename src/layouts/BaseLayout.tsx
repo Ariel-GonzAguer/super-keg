@@ -10,7 +10,7 @@ export default function BaseLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <section className={styles.BaseLayout}>
-      <Navegacion/>
+      <Navegacion currentPath={window.location.pathname} />
 
       <main className="base-layout__content">
         {children}
@@ -18,7 +18,7 @@ export default function BaseLayout({ children }: { children: React.ReactNode }) 
 
       <BtnVolverIndex currentPath={window.location.pathname} />
 
-      <Footer/>
+      <Footer />
     </section>
   )
 }

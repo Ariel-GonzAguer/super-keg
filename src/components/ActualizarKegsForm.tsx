@@ -65,26 +65,20 @@ export default function ActualizarKegsForm() {
       }
 
       IDsKegsEscaneados.forEach((keg) => {
-        const kegKey = Object.keys(data.kegs).find(
-          (key) => data.kegs[key].id === keg.id
-        );
+        const nuevaUbicacion = estadoRef.current === "recogido"
+          ? Object.values(clientes).find(cliente => /\(origen\)/i.test(cliente.nombre))?.nombre || "Ubicación no especificada"
+          : ubicacionRef.current || data.kegs[keg.id]?.ubicacion || "Ubicación no especificada";
 
-        if (kegKey) {
-          const nuevaUbicacion = estadoRef.current === "recogido"
-            ? Object.values(clientes).find(cliente => /\(origen\)/i.test(cliente.nombre))?.nombre || "Ubicación no especificada"
-            : ubicacionRef.current || data.kegs[kegKey].ubicacion || "Ubicación no especificada";
-
-          data.kegs[kegKey] = {
-            ...data.kegs[kegKey],
-            estado: estadoRef.current || data.kegs[kegKey].estado,
-            ultimaModificacion: ultimaModificacionRef.current || new Date().toISOString(),
-            lote: loteRef.current || data.kegs[kegKey].lote || "Lote no especificado",
-            producto: productoRef.current || data.kegs[kegKey].producto || "Producto no especificado",
-            ubicacion: nuevaUbicacion,
-          };
-        } else {
-          console.warn(`No se encontró el keg con ID: ${keg.id}`);
-        }
+        // Actualizamos directamente usando el ID como clave
+        data.kegs[keg.id] = {
+          ...data.kegs[keg.id],
+          estado: estadoRef.current || data.kegs[keg.id]?.estado,
+          ultimaModificacion: ultimaModificacionRef.current || new Date().toISOString(),
+          lote: loteRef.current || data.kegs[keg.id]?.lote || "Lote no especificado",
+          producto: productoRef.current || data.kegs[keg.id]?.producto || "Producto no especificado",
+          ubicacion: nuevaUbicacion,
+          id: keg.id // Asegurarnos de mantener el ID
+        };
       });
 
       batch.update(docRef, { kegs: data.kegs });

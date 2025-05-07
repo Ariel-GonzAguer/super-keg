@@ -5,7 +5,7 @@ export default function BtnVolverIndex({ currentPath }: { currentPath: string })
   const navigate = useNavigate();
 
   // No mostrar el botón si el usuario está en la página de inicio
-  if (currentPath === "/index") {
+  if (currentPath === "/index" || currentPath === "/") {
     return null;
   }
 

@@ -35,13 +35,17 @@ const useKegStore = create<KegStoreState>()(
 
           if (docSnap.exists()) {
             const data = docSnap.data();
+            // Obtener el número de productos actuales para generar una nueva clave
+            const numProductos = Object.keys(data.productos || {}).length;
+            const nuevaClave = `producto-${numProductos}`;
+            
             const productosActualizados = {
               ...data.productos,
-              nombre: nuevoProducto.nombre,
+              [nuevaClave]: nuevoProducto.nombre
             };
 
             await updateDoc(docRef, {
-              productos: productosActualizados,
+              productos: productosActualizados
             });
 
             // Actualizar el estado local
@@ -134,19 +138,16 @@ const useKegStore = create<KegStoreState>()(
             const productos = data.productos || {};
 
             // Encontrar la clave del producto que queremos eliminar
-            const productoKey = Object.entries(productos).find(([_, value]) =>
-              typeof value === "string"
-                ? value === nombreProducto
-                : (value as { nombre: string }).nombre === nombreProducto
+            const productoKey = Object.entries(productos).find(
+              ([_, value]) => value === nombreProducto
             )?.[0];
 
             if (productoKey) {
-              // Crear un nuevo objeto sin el producto a eliminar
               const { [productoKey]: _, ...productosRestantes } = productos;
 
               // Actualizar Firestore
               await updateDoc(docRef, {
-                productos: productosRestantes,
+                productos: productosRestantes
               });
 
               // Actualizar el estado local

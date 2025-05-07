@@ -5,7 +5,15 @@ import { Link } from "@arielgonzaguer/michi-router"
 import styles from "../styles/Navegacion.module.css"
 
 
-export default function Navegacion() {
+export default function Navegacion({ currentPath }: { currentPath: string }) {
+
+  if (currentPath === "/") {
+    return (
+     <div>
+      
+     </div>
+    )
+  }
 
   return (
     <nav className={styles.Navegacion}>

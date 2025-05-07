@@ -30,8 +30,8 @@ export default function Home() {
   }, [user, navigate]);
 
   return (
-    <section>
-      <h1>Super Keg </h1>
+    <section className="text-center">
+      <h1 className="text-3xl pb-4">Super Keg </h1>
       <Login />
     </section>
   )

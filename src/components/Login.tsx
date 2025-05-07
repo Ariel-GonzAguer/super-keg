@@ -61,14 +61,11 @@ export default function Login() {
   };
 
   return (
-    <section
-      style={{ display: "flex", flexDirection: "column", textAlign: "center" }}
-    >
-      <h1>Login</h1>
+    <section className="flex flex-col items-center justify-center">
       {error && <div style={{ color: "red", margin: "10px 0" }}>{error}</div>}
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="email" className="animate-blurred-fade-in">Email</label>
+      <form onSubmit={handleLogin} className="flex flex-col items-center w-full max-w-sm">
+        <div className="flex flex-col mb-2">
+          <label htmlFor="email">Email</label>
           <input
             type="email"
             ref={emailRef}
@@ -79,8 +76,8 @@ export default function Login() {
             disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="password">Contraseña</label>
+        <div className="flex flex-col mb-2">
+          <label htmlFor="password" className="pr-2" >Contraseña</label>
           <input
             type="password"
             ref={passwordRef}
@@ -91,7 +88,7 @@ export default function Login() {
             disabled={loading}
           />
         </div>
-        <div>
+        <div className="flex flex-col mb-2">
           <label htmlFor="empresa">Empresa</label>
           <input
             type="text"
@@ -103,7 +100,8 @@ export default function Login() {
             disabled={loading}
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading}
+          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer w-[30%]">
           {loading ? "Iniciando sesión..." : "Login"}
         </button>
       </form>
