@@ -51,7 +51,7 @@ export default function Login() {
 
       // Redirige a la página principal después de iniciar sesión
       navigate("/index");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setError("Error al iniciar sesión. Verifica tus credenciales.");
     } finally {
@@ -68,7 +68,7 @@ export default function Login() {
       {error && <div style={{ color: "red", margin: "10px 0" }}>{error}</div>}
       <form onSubmit={handleLogin}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email" className="animate-blurred-fade-in">Email</label>
           <input
             type="email"
             ref={emailRef}
