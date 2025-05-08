@@ -4,26 +4,25 @@
 
 
 // componentes
-
+import NavegacionIndex from "../components/NavegacionIndex";
 
 // store
 import useKegStore from "../store/useKegsStore";
-import useAuthStore from "../store/useAuthStore";
 
 
 export default function Index() {
   // store
   const { personaUsuaria } = useKegStore();
-  const { user } = useAuthStore();
-
-
 
   return (
-    <section style={{ textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center", height: "50vh" }}>
-      <h1>SUPER KEG</h1>
-      <p>Hola de nuevo {personaUsuaria}</p>
-      <p>{user?.empresa}</p>
+    <section className="flex flex-col justify-evenly items-center h-[90vh]">
+      <div className="flex justify-center items-center mb-4 text-4xl ">
+        <p>Hola de nuevo  </p>
+        <p className="animate-tada bg-sky-900 text-amber-50 px-2 rounded ml-1.5">{personaUsuaria}</p>
+      </div>
 
+      <p className="text-2xl mb-4">¿Qué vas a hacer hoy?</p>
+      <NavegacionIndex />
     </section>
   )
 }

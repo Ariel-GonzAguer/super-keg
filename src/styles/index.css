@@ -2,6 +2,15 @@
 @plugin "@midudev/tailwind-animations";
 @plugin "@tailwindcss/forms";
 
+@font-face {
+  font-family: "CooperHewitt";
+  src: url("/typographies/cooper-hewitt/CooperHewitt-Bold.woff2")
+    format("woff2");
+  font-display: swap;
+}
+
 @theme {
-  
+  /* tipografías */
+  --font-cooperhewitt: "CooperHewitt", sans-serif;
+
 }

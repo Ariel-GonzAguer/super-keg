@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <section className="text-center">
-      <h1 className="text-3xl pb-4">Super Keg </h1>
+      <h1 className="text-6xl pb-4 font-cooperhewitt font-extrabold mb-6">SUPER KEG</h1>
       <Login />
     </section>
   )

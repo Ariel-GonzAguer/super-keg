@@ -62,7 +62,7 @@ export default function Login() {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      {error && <div style={{ color: "red", margin: "10px 0" }}>{error}</div>}
+      {error && <div className="text-red-600 m-10 ml-0 mr-0">{error}</div>}
       <form onSubmit={handleLogin} className="flex flex-col items-center w-full max-w-sm">
         <div className="flex flex-col mb-2">
           <label htmlFor="email">Email</label>
@@ -74,6 +74,7 @@ export default function Login() {
             name="email"
             id="email"
             disabled={loading}
+            className="rounded"
           />
         </div>
         <div className="flex flex-col mb-2">
@@ -82,10 +83,11 @@ export default function Login() {
             type="password"
             ref={passwordRef}
             required
-            placeholder="Password"
+            placeholder="Contraseña"
             name="password"
             id="password"
             disabled={loading}
+            className="rounded"
           />
         </div>
         <div className="flex flex-col mb-2">
@@ -97,11 +99,12 @@ export default function Login() {
             placeholder="empresa"
             name="empresa"
             id="empresa"
+            className="rounded"
             disabled={loading}
           />
         </div>
         <button type="submit" disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer w-[30%]">
+          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer w-[30%] hover:bg-sky-600 transition-colors duration-300 ease-in-out">
           {loading ? "Iniciando sesión..." : "Login"}
         </button>
       </form>
