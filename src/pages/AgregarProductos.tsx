@@ -32,13 +32,13 @@ export default function AgregarProductos() {
       });
 
       if (result) {
-        setMensaje("Cliente creado exitosamente");
+        setMensaje("Producto creado exitosamente");
         setNombreProducto("");
       } else {
-        setMensaje("Error al crear el cliente");
+        setMensaje("Error al crear el producto");
       }
     } catch (error) {
-      setMensaje("Error al crear el cliente");
+      setMensaje("Error al crear el producto");
       console.error(error);
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ export default function AgregarProductos() {
 
   return (
     <section>
-      <h1>Agregar Clientes</h1>
+      <h1>Agregar Producto</h1>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "300px", margin: "0 auto" }}>
         <div>
           <label htmlFor="nombre">Nombre del Producto:</label>

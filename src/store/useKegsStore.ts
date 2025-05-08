@@ -35,12 +35,21 @@ const useKegStore = create<KegStoreState>()(
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            // Obtener el número de productos actuales para generar una nueva clave
-            const numProductos = Object.keys(data.productos || {}).length;
-            const nuevaClave = `producto-${numProductos}`;
+            const productos = data.productos || {};
+            
+            // Encontrar el número más alto usado en las claves existentes
+            const maxNum = Object.keys(productos)
+              .map(key => {
+                const match = key.match(/producto-(\d+)/);
+                return match ? parseInt(match[1]) : 0;
+              })
+              .reduce((max, num) => Math.max(max, num), -1);
+            
+            // Usar el siguiente número disponible
+            const nuevaClave = `producto-${maxNum + 1}`;
             
             const productosActualizados = {
-              ...data.productos,
+              ...productos,
               [nuevaClave]: nuevoProducto.nombre
             };
 
