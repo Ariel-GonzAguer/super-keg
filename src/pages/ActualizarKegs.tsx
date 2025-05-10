@@ -1,36 +1,14 @@
-// hooks
-// import { useState } from "react";
-
-// componentes
-import QrScanner from "../components/QrScanner";
-import ActualizarKegsForm from "../components/ActualizarKegsForm";
-
-
-// store
-import useKegStore from "../store/useKegsStore";
-
+// enrutado
+import { useNavigate } from "@arielgonzaguer/michi-router";
 function App() {
-  // estados locales
-
-
-  // store
-  const { IDsKegsEscaneados } = useKegStore();
+  const navigate = useNavigate();
 
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "sans-serif" }}>
-      <h1>Escanear Kegs</h1>
-      <QrScanner />
+    <div className="flex flex-col gap-12">
+      <button className="border-2 border-black p-0.5 bg-sky-500 px-1 rounded text-white hover:bg-sky-600 transition-colors duration-300 ease-in-out cursor-pointer w-2xl m-[0_auto] text-2xl h-11" onClick={() => navigate("/scanear-kegs")}>Escanear Kegs</button>
 
-      <h2>Escaneados: {IDsKegsEscaneados.length}</h2>
-      <ul>
-        {IDsKegsEscaneados.map((keg, index) => (
-          <li key={index}>ID: {keg.id}</li>
-        ))}
-      </ul>
-
-      <ActualizarKegsForm />
-
+      <button className="border-2 border-black p-0.5 bg-sky-500 px-1 rounded text-white hover:bg-sky-600 transition-colors duration-300 ease-in-out cursor-pointer w-2xl m-[0_auto] text-2xl h-11" onClick={() => navigate("/manual-kegs")}>Actualizar Kegs Manualmente</button>
     </div>
   );
 }

@@ -8,6 +8,8 @@ import NotFoud404 from "../components/NotFound404";
 
 import ActualizarKegs from "../pages/ActualizarKegs";
 import VerKegs from "../pages/VerKegs";
+import ActualizarKegsManual from "../components/ActulizarKegsManual";
+import QRScanner from "./QrScanner";
 
 import AgregarClientes from "../pages/AgregarClientes";
 import Clientes from "../pages/Clientes";
@@ -28,6 +30,8 @@ const rutas = [
   { path: "/", component: <Home /> },
   { path: "/index", component: <Protected><Index /></Protected> },
   { path: "/actualizar-kegs", component: <Protected><ActualizarKegs /></Protected> },
+  { path: "/scanear-kegs", component: <Protected><QRScanner /></Protected> },
+  { path: "/manual-kegs", component: <Protected><ActualizarKegsManual /></Protected> },
   { path: "/ver-kegs", component: <Protected><VerKegs /> </Protected> },
   { path: "/agregar-clientes", component: <Protected><AgregarClientes /></Protected> },
   { path: "/ver-clientes", component: <Protected><Clientes /></Protected> },

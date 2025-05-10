@@ -1,11 +1,10 @@
 // hooks
 import { useState } from "react";
 
-// estilos
-import styles from "../styles/QrScanner.module.css";
-
 // componentes
 import { Scanner } from '@yudiel/react-qr-scanner';
+import ActualizarKegsForm from "../components/ActualizarKegsForm";
+
 
 // store
 import useKegStore from "../store/useKegsStore";
@@ -16,10 +15,10 @@ export default function QRScanner() {
   const [error, setError] = useState<string | null>(null);
 
   // store
-  const { agregarIDKegsEscaneados, kegsTotales } = useKegStore(); 
+  const { agregarIDKegsEscaneados, kegsTotales, IDsKegsEscaneados } = useKegStore();
 
   return (
-    <section className={styles.QRScanner}>
+    <section className="relative size-[400px] m-[0_auto]">
       <Scanner
         onScan={(qrCode) => {
           if (qrCode) {
@@ -51,6 +50,16 @@ export default function QRScanner() {
         }}
         allowMultiple={false}
       />
+
+      <h2>Escaneados: {IDsKegsEscaneados.length}</h2>
+      <ul>
+        {IDsKegsEscaneados.map((keg, index) => (
+          <li key={index}>ID: {keg.id}</li>
+        ))}
+      </ul>
+
+      <ActualizarKegsForm />
+
     </section>
   );
 }
